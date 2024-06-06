@@ -18,12 +18,13 @@ public class SlingShotHandler : MonoBehaviour
 
     [Header("Slingshot Stats")]
     [SerializeField] private float _maxDistance = 3.5f;
+    [SerializeField] private float _shotForce = 5f;
 
     [Header("Scripts")]
     [SerializeField] private SlingShotArea _slingshotArea;
 
     [Header("Bird")]
-    [SerializeField] private GameObject _angieBirdPrefab;
+    [SerializeField] private AngieBird _angieBirdPrefab;
     [SerializeField] private float _angieBirdPositionOffset = 2f;
 
     private Vector2 _slingShotLinesPosition;
@@ -33,7 +34,7 @@ public class SlingShotHandler : MonoBehaviour
 
     private bool _clickedWithinArea;
 
-    private GameObject _spawnedAngieBird;
+    private AngieBird _spawnedAngieBird;
 
     private void Awake() 
     {
@@ -59,7 +60,9 @@ public class SlingShotHandler : MonoBehaviour
 
         if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
-           _clickedWithinArea = false; 
+           _clickedWithinArea = false;
+
+           _spawnedAngieBird.LaunchBird(_direction, _shotForce);
         }
     }
 
@@ -103,12 +106,14 @@ public class SlingShotHandler : MonoBehaviour
         Vector2 dir = (_centerPosition.position - _idlePosition.position).normalized;
         Vector2 spawnPostion = (Vector2)_idlePosition.position + dir * _angieBirdPositionOffset;
 
-        _spawnedAngieBird = Instantiate(_angieBirdPrefab, _idlePosition.position, Quaternion.identity);
+        _spawnedAngieBird = Instantiate(_angieBirdPrefab, spawnPostion, Quaternion.identity);
+        _spawnedAngieBird.transform.right = dir;
     }
 
     private void PositionAndRotateAngieBird()
     {
-        _spawnedAngieBird.transform.position = _slingShotLinesPosition;
+        _spawnedAngieBird.transform.position = _slingShotLinesPosition + _directionNormalized * _angieBirdPositionOffset;
+        _spawnedAngieBird.transform.right = _directionNormalized;
     }
 
     #endregion

@@ -6,6 +6,9 @@ public class AngieBird : MonoBehaviour
 {
     private Rigidbody2D _rb;
     private CircleCollider2D _circleCollider;
+    
+    private bool _hasBeenLaunched;
+    private bool _shouldFaceVelocityDirection;
 
     private void Awake()
     {
@@ -19,6 +22,14 @@ public class AngieBird : MonoBehaviour
         _circleCollider.enabled = false;
     }
 
+    private void FixedUpdate()
+    {
+        if (_hasBeenLaunched && _shouldFaceVelocityDirection)
+        {
+            transform.right = _rb.velocity;
+        }
+    }
+
     public void LaunchBird(Vector2 direction, float force)
     {
         _rb.isKinematic = false;
@@ -26,5 +37,13 @@ public class AngieBird : MonoBehaviour
 
         //apply the force
         _rb.AddForce(direction * force, ForceMode2D.Impulse);
+
+        _hasBeenLaunched = true;
+        _shouldFaceVelocityDirection = true;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        _shouldFaceVelocityDirection = false;
     }
 }
